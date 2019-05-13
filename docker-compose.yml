@@ -27,7 +27,7 @@ services:
     - --sslkey
     - /certs/key.pem
     - --sslcert
-    - /certs/cert.crt
+    - /certs/cert.pem
     - --admin-password
     - ${ENCRYPTED_PASSWORD}
 
@@ -54,7 +54,7 @@ services:
     environment:
       CONCOURSE_EXTERNAL_URL: https://dockerlocal:8443
       CONCOURSE_TLS_BIND_PORT: 8443
-      CONCOURSE_TLS_CERT: /certs/cert.crt
+      CONCOURSE_TLS_CERT: /certs/cert.pem
       CONCOURSE_TLS_KEY: /certs/key.pem
       CONCOURSE_POSTGRES_HOST: concourse-db
       CONCOURSE_POSTGRES_USER: concourse_user
@@ -76,8 +76,16 @@ services:
       CONCOURSE_TSA_HOST: concourse-web:2222
     restart: always
 
+  rancher:
+    image: rancher/rancher:${RANCHER_VERSION}
+    ports: ["443:443"]
+    volumes:
+    - rancher_data:/var/lib/rancher
+    - dockerlocal_certs:/etc/rancher/ssl
+
 volumes:
   concourse_keys:
   concourse_data:
   portainer_data:
   dockerlocal_certs:
+  rancher_data:

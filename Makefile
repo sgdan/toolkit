@@ -30,10 +30,19 @@ concourse-stop:
 	docker-compose stop concourse-db concourse-web concourse-worker
 
 # start a bash shell within a new concourse container
-concourse-shell: .env
+concourse-shell: .certs
 	docker-compose run --rm --entrypoint bash -w /concourse-keys concourse-web
 
-up: portainer concourse
+rancher: .certs
+	docker-compose up -d rancher
+
+rancher-stop:
+	docker-compose stop rancher
+
+rancher-shell: .certs
+	docker-compose run --rm --entrypoint bash -w /etc/ssl/certs rancher
+
+up: portainer concourse rancher
 
 down:
 	docker-compose down --remove-orphans
