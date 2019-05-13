@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  # Use docker's "Docker in Docker" image so we can script docker commands
+  docker:
+    build: docker
+    volumes:
+    - .:/working
+    - concourse_keys:/concourse
+    - dockerlocal_certs:/certs
+    - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /working
+
+  # Nice UI for local docker debugging
+  portainer:
+    image: portainer/portainer:${PORTAINER_VERSION}
+    ports: ["9000:9000"]
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - portainer_data:/data
+    - dockerlocal_certs:/certs
+    restart: always
+    command:
+    - "-H"
+    - "unix:///var/run/docker.sock"
+    - --ssl
+    - --sslkey
+    - /certs/key.pem
+    - --sslcert
+    - /certs/cert.crt
+    - --admin-password
+    - ${ENCRYPTED_PASSWORD}
+
+  # Concourse-ci components
+  concourse-db:
+    image: postgres:${POSTGRES_VERSION}
+    volumes:
+    - concourse_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_USER: concourse_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: always
+
+  concourse-web:
+    image: concourse/concourse:${CONCOURSE_VERSION}
+    command: web
+    links: [concourse-db]
+    depends_on: [concourse-db]
+    ports: ["8443:8443"]
+    volumes:
+    - concourse_keys:/concourse-keys
+    - dockerlocal_certs:/certs
+    environment:
+      CONCOURSE_EXTERNAL_URL: https://dockerlocal:8443
+      CONCOURSE_TLS_BIND_PORT: 8443
+      CONCOURSE_TLS_CERT: /certs/cert.crt
+      CONCOURSE_TLS_KEY: /certs/key.pem
+      CONCOURSE_POSTGRES_HOST: concourse-db
+      CONCOURSE_POSTGRES_USER: concourse_user
+      CONCOURSE_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      CONCOURSE_POSTGRES_DATABASE: concourse
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+    restart: always
+
+  concourse-worker:
+    image: concourse/concourse:${CONCOURSE_VERSION}
+    command: worker
+    privileged: true
+    depends_on: [concourse-web]
+    volumes: ["concourse_keys:/concourse-keys"]
+    links: [concourse-web]
+    stop_signal: SIGUSR2
+    environment:
+      CONCOURSE_TSA_HOST: concourse-web:2222
+    restart: always
+
+volumes:
+  concourse_keys:
+  concourse_data:
+  portainer_data:
+  dockerlocal_certs:
