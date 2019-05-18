@@ -5,6 +5,6 @@ RUN apk --update --no-cache add py-pip python-dev libffi-dev openssl-dev gcc lib
 RUN pip install docker-compose
 
 # Additional utilities
-RUN apk --update --no-cache add apache2-utils bash openssl
+RUN apk --update --no-cache add apache2-utils bash openssl curl jq
 
 CMD ["/bin/bash"]

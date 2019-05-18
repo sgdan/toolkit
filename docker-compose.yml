@@ -10,6 +10,9 @@ services:
     - dockerlocal_certs:/certs
     - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /working
+    network_mode: host
+    environment:
+      RANCHER_PASSWORD: ${RANCHER_PASSWORD}
 
   # Nice UI for local docker debugging
   portainer:
@@ -78,10 +81,13 @@ services:
 
   rancher:
     image: rancher/rancher:${RANCHER_VERSION}
-    ports: ["443:443"]
+    ports: ["9443:443"]
+    environment:
+      SSL_CERT_DIR: /certs
     volumes:
     - rancher_data:/var/lib/rancher
-    - dockerlocal_certs:/etc/rancher/ssl
+    - rancher_audit:/var/log/auditlog
+    - dockerlocal_certs:/certs
 
 volumes:
   concourse_keys:
@@ -89,3 +95,4 @@ volumes:
   portainer_data:
   dockerlocal_certs:
   rancher_data:
+  rancher_audit:

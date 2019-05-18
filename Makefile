@@ -35,6 +35,7 @@ concourse-shell: .certs
 
 rancher: .certs
 	docker-compose up -d rancher
+	docker-compose run --rm docker bash ./scripts/init-rancher.sh
 
 rancher-stop:
 	docker-compose stop rancher
