@@ -43,6 +43,11 @@ rancher-stop:
 rancher-shell: .certs
 	docker-compose run --rm --entrypoint bash -w /etc/ssl/certs rancher
 
+# Run this once to create "local" k8s cluster using rancher agent
+# May need to reset local docker VM if there are etcd errors
+k8s:
+	docker-compose run --rm docker bash ./scripts/create-k8s-cluster.sh
+
 up: portainer concourse rancher
 
 down:

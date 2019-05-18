@@ -8,19 +8,19 @@ RANCHER=https://dockerlocal:9443
 while ! curl -sk -o /dev/null $RANCHER/ping; do sleep 3; done
 
 # Change admin password
-LOGINRESPONSE=$(curl -sk "$RANCHER/v3-public/localProviders/local?action=login" \
-    --data-binary '{"username":"admin","password":"admin"}')
-LOGINTOKEN=$(echo $LOGINRESPONSE | jq -r .token)
+LOGINTOKEN=$(curl -sk "$RANCHER/v3-public/localProviders/local?action=login" \
+    --data-binary '{"username":"admin","password":"admin"}' \
+    | jq -r .token)
 curl -sk "$RANCHER/v3/users?action=changepassword" \
     -H "Authorization: Bearer $LOGINTOKEN" \
     --data-binary '{"currentPassword":"admin","newPassword":"'$RANCHER_PASSWORD'"}'
 echo Admin password changed
 
 # Set server url
-APIRESPONSE=$(curl -sk "$RANCHER/v3/token" \
+APITOKEN=$(curl -sk "$RANCHER/v3/token" \
     -H "Authorization: Bearer $LOGINTOKEN" \
-    --data-binary '{"type":"token","description":"automation"}')
-APITOKEN=`echo $APIRESPONSE | jq -r .token`
+    --data-binary '{"type":"token","description":"automation"}' \
+    | jq -r .token)
 curl -sk "$RANCHER/v3/settings/server-url" \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $APITOKEN" \

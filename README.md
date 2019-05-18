@@ -22,18 +22,9 @@ Use the 3 Musketeers pattern to run some tools for local container development
 - Run `make concourse` which will generate keys and start the concourse db, web and worker components
 - Access Concourse UI on [https://dockerlocal:8443](https://dockerlocal:8443)
   
-## Rancher 2 & kubernetes
+## Rancher 2 & Kubernetes
 
-- Enable local kubernetes cluster in Docker preferences (may take a while to start)
-- From Docker context menu choose the "docker-for-desktop" context (sets `~/.kube/config`)
 - Run `make rancher`
 - Access Rancher UI on [https://dockerlocal:9443](https://dockerlocal:9443)
-- Add Cluster > Custom "From my own existing nodes"
-- Choose etcd + Control Plane + Worker for local single node
-- Copy and run the command. For windows gitbash remove `sudo` and double `/` for the volume mounts:
-
-  ```sh
-  docker run -d --privileged --restart=unless-stopped --net=host -v //etc/kubernetes:/etc/kubernetes -v //var/run:/var/run rancher/rancher-agent:v2.2.3 --server https://dockerlocal:9443 --token ... --ca-checksum ... --etcd --controlplane --worker
-  ```
-
+- Optionally create local k8s cluster with `make k8s`
 - Wait for the cluster to be initialised. I needed to reset my docker VM in order to avoid errors (etcd would not initialise properly).
