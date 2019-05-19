@@ -1,0 +1,15 @@
+{
+  "backend": {
+    "file": {
+      "path": "/vault/file"
+    }
+  },
+  "listener": {
+    "tcp":{
+      "address": "0.0.0.0:8200",
+      "tls_cert_file": "/certs/cert.pem",
+      "tls_key_file": "/certs/key.pem"
+    }
+  },
+  "ui": true
+}

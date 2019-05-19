@@ -89,6 +89,17 @@ services:
     - rancher_audit:/var/log/auditlog
     - dockerlocal_certs:/certs
 
+  vault:
+    build: vault
+    ports: ["8200:8200"]
+    cap_add:
+    - IPC_LOCK
+    volumes:
+    - vault_file:/vault/file
+    - vault_logs:/vault/logs
+    - dockerlocal_certs:/certs
+    command: server
+
 volumes:
   concourse_keys:
   concourse_data:
@@ -96,3 +107,5 @@ volumes:
   dockerlocal_certs:
   rancher_data:
   rancher_audit:
+  vault_file:
+  vault_logs:

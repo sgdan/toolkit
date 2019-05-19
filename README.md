@@ -28,3 +28,8 @@ Use the 3 Musketeers pattern to run some tools for local container development
 - Access Rancher UI on [https://dockerlocal:9443](https://dockerlocal:9443)
 - Optionally create local k8s cluster with `make k8s`
 - Wait for the cluster to be initialised. I needed to reset my docker VM in order to avoid errors (etcd would not initialise properly).
+
+## Hashicorp Vault for Credentials
+
+- Run `make vault`
+- Access Vault UI on [https://dockerlocal:8200](https://dockerlocal:8200)

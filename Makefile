@@ -48,7 +48,16 @@ rancher-shell: .certs
 k8s:
 	docker-compose run --rm docker bash ./scripts/create-k8s-cluster.sh
 
-up: portainer concourse rancher
+.vault: vault/Dockerfile vault/config.json
+	docker-compose build vault
+
+vault: .vault .certs
+	docker-compose up -d vault
+
+vault-stop:
+	docker-compose stop vault
+
+up: portainer concourse rancher vault
 
 down:
 	docker-compose down --remove-orphans

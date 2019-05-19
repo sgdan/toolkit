@@ -11,6 +11,7 @@ cd /certs
     -config <(cat /etc/ssl/openssl.cnf \
         <(printf '[SAN]\nsubjectAltName=DNS:dockerlocal'))
 [ ! -f cacerts.pem ] && cp cert.pem cacerts.pem
+chmod a+r *
 
 # Generate keys for Concourse CI
 cd /concourse
