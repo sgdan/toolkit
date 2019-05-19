@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # see https://gist.github.com/superseb/c363247c879e96c982495daea1125276 
 

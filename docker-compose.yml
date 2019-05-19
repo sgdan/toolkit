@@ -1,9 +1,8 @@
 version: '3'
 
 services:
-  # Use docker's "Docker in Docker" image so we can script docker commands
   docker:
-    build: docker
+    image: sgdan/docker-utils:latest
     volumes:
     - .:/working
     - concourse_keys:/concourse
@@ -65,6 +64,9 @@ services:
       CONCOURSE_POSTGRES_DATABASE: concourse
       CONCOURSE_ADD_LOCAL_USER: test:test
       CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+      #CONCOURSE_VAULT_URL: https://dockerlocal:8200
+      #CONCOURSE_VAULT_CA_CERT: /certs/cacerts.pem
+      #CONCOURSE_VAULT_CLIENT_TOKEN: <token>
     restart: always
 
   concourse-worker:
@@ -78,6 +80,14 @@ services:
     environment:
       CONCOURSE_TSA_HOST: concourse-web:2222
     restart: always
+
+  concourse-shell:
+    image: concourse/concourse:${CONCOURSE_VERSION}
+    volumes:
+    - .:/working
+    - concourse_keys:/concourse-keys
+    entrypoint: bash
+    working_dir: /working
 
   rancher:
     image: rancher/rancher:${RANCHER_VERSION}
@@ -99,6 +109,8 @@ services:
     - vault_logs:/vault/logs
     - dockerlocal_certs:/certs
     command: server
+    environment:
+      - VAULT_SKIP_VERIFY=1
 
 volumes:
   concourse_keys:
